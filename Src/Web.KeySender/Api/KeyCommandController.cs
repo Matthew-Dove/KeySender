@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Web.KeySender.Core;
 using Web.KeySender.Models;
@@ -9,14 +10,14 @@ namespace Web.KeySender.Api
     {
         /// <summary>Client requests the server for the next key value.</summary>
         /// <returns>The key to send to the client's active application.</returns>
-        public KeyCommand Get()
+        public async Task<KeyCommand> Get()
         {
             var key = KeyCommand.Nothing;
             Log.Trace("A key was requested.");
 
             try
             {
-                key = CommandQueue.Dequeue();
+                key = await CommandQueue.DequeueAsync();
             }
             catch (Exception ex)
             {
