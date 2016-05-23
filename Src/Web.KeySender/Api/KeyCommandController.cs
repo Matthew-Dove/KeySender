@@ -1,9 +1,30 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
+using Web.KeySender.Core;
+using Web.KeySender.Models;
 
 namespace Web.KeySender.Api
 {
     public class KeyCommandController : ApiController
     {
-        // TODO: Create a semaphore to unlock waiting threads when a key is enqueued.
+        /// <summary>Client requests the server for the next key value.</summary>
+        /// <returns>The key to send to the client's active application.</returns>
+        public KeyCommand Get()
+        {
+            var key = KeyCommand.Nothing;
+            Log.Trace("A key was requested.");
+
+            try
+            {
+                key = CommandQueue.Dequeue();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
+            Log.Trace("The key {0} is being returned", key);
+            return key;
+        }
     }
 }

@@ -22,5 +22,17 @@ namespace Web.KeySender.Core
                 Log.Trace("The key {0} isn't a known value, it won't be added to the CommandQueue.", key);
             }
         }
+
+        public static KeyCommand Dequeue()
+        {
+            var key = KeyCommand.Nothing;
+
+            if (!_commands.TryDequeue(out key))
+            {
+                // TODO: Block the thread while we wait for a key send event.
+            }
+
+            return key;
+        }
     }
 }

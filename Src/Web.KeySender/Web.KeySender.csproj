@@ -173,6 +173,7 @@
     <Compile Include="Api\KeyCommandController.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Controllers\KeyController.cs" />
     <Compile Include="Controllers\LogController.cs" />
@@ -183,6 +184,8 @@
     </Compile>
     <Compile Include="Hubs\KeyHub.cs" />
     <Compile Include="Hubs\LogHub.cs" />
+    <Compile Include="Infrastructure\TraceExceptionLogger.cs" />
+    <Compile Include="Infrastructure\UnhandledExceptionHandler.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Models\KeyCommand.cs" />
     <Compile Include="Models\LogModel.cs" />
