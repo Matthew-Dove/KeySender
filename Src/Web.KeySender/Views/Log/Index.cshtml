@@ -1,0 +1,49 @@
+﻿@model Web.KeySender.Models.LogModel
+
+<h2 style="text-align: center;">@(Model.IsLoggingEnabled ? "Logging" : "Enable Logging [appSettings => IsLoggingEnabled => \"true\"]")</h2>
+
+@if (Model.IsLoggingEnabled)
+{
+    <div id="logDisplay" style="max-width: 1024px; margin: auto;"></div>
+
+    <script src="~/Scripts/jquery-1.6.4.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="/signalr/hubs"></script>
+
+    <script>
+        $(function () {
+            // Add new message (trace, or error) to the screen.
+            var display = document.getElementById('logDisplay');
+            var displayTrace = function (text, textColor) {
+                var p = document.createElement('P');
+                p.style.color = textColor;
+
+                // Different browsers have different properties for setting the text on elements.
+                if (p.innerText) {
+                    p.innerText = text;
+                }
+                else {
+                    p.textContent = text;
+                }
+
+                display.insertBefore(p, display.firstChild);
+            }
+
+            // This function is called server side from the LogHub when there is a new trace.
+            $.connection.logHub.client.sendTrace = function (text) {
+                console.log(text);
+                displayTrace(text, 'black');
+            };
+
+            // This function is called server side from the LogHub when there is a new error.
+            $.connection.logHub.client.sendError = function (text) {
+                displayTrace(text, 'red');
+            };
+            
+            // Connect to LogHub.
+            $.connection.hub.start().done(function () {
+                console.log('Connected to the Hub');
+            });
+        });
+    </script>
+}

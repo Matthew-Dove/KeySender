@@ -1,0 +1,30 @@
+﻿<script src="~/Scripts/hmac-sha512.js"></script>
+<script src="~/Scripts/jquery-1.6.4.min.js"></script>
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="/signalr/hubs"></script>
+
+<script>
+    $(function () {
+        // Connect to the server via SignalR, once connected define a function to send keys from the client to the server.
+        $.connection.hub.start().done(function () {
+            window.sendKey = function (key) {
+                var secretKey = window.clientSecretKey;
+                if (secretKey) {
+                    var hash = CryptoJS.HmacSHA512(key, secretKey).toString(); // This hash implies the message body hasn't been tampered with in transit to the server (assuming the secret keys match).
+                    $.connection.keyHub.server.receiveKey(key, hash);
+                } else {
+                    console.log('Failed to send the key ' + key + ', as the Client Secret Key has no value; reload the page and try again.');
+                }
+            };
+            console.log('Connected to the Hub');
+        });
+    });
+
+    // Get the "Secret Key" from the client, it should match the value in the web config's app setting for "ClientSecretKey".
+    (function () {
+        window.clientSecretKey = prompt("Please enter the Client Secret Key");
+        if (!window.clientSecretKey) {
+            alert('Invalid value for the Client Secret Key, reload to try again.');
+        }
+    })();
+</script>
