@@ -10,9 +10,9 @@ namespace Web.KeySender.Core
     public static class CommandQueue
     {
         /// <summary>Number of milliseconds to wait between checking for new keys.</summary>
-        private const int SLEEP_MILLISECONDS = 100;
+        private const int SLEEP_MILLISECONDS = 50;
         /// <summary>The total number of attempts to check for new keys commands before giving up.</summary>
-        private const int MAX_ATTEMPTS = 150;
+        private const int MAX_ATTEMPTS = 200;
 
         private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly static ConcurrentQueue<KeyCommand> _commands = new ConcurrentQueue<KeyCommand>();
@@ -34,22 +34,20 @@ namespace Web.KeySender.Core
         public static async Task<KeyCommand> DequeueAsync()
         {
             var key = KeyCommand.Nothing;
-            var entered = await _semaphore.WaitAsync(1); // Only allow one thread to take keys at a time (doesn't make sense to send some keys to device A, and others to device B).
 
-            if (entered)
+            // Only allow one thread to take keys at a time (doesn't make sense to send some keys to client A, and others to client B).
+            if (_semaphore.Wait(0))
             {
-                Log.Trace("Entered the semaphore, waiting for a new key command.");
-
                 try
                 {
-                    key = await GetCommandKeyAsync(0);
+                    Log.Trace("Entered the semaphore, waiting for a new key command.");
+                    key = await GetCommandKeyAsync();
+                    Log.Trace(key == KeyCommand.Nothing ? "No key was found from the command queue, returning the key {0}." : "The key {0} was successfully dequeued.", key);
                 }
                 finally
                 {
                     _semaphore.Release();
                 }
-
-                Log.Trace(key == KeyCommand.Nothing ? "No key was found from the command queue, returning the key {0}." : "The key {0} was successfully dequeued.", key);
             }
             else
             {
@@ -60,17 +58,18 @@ namespace Web.KeySender.Core
         }
 
         /// <summary>Periodically check the command queue for a new key, until the maximum attempts is reached, or a key is dequeued.</summary>
-        private static async Task<KeyCommand> GetCommandKeyAsync(int attempts)
+        private static async Task<KeyCommand> GetCommandKeyAsync()
         {
             var key = KeyCommand.Nothing;
 
-            if (attempts < MAX_ATTEMPTS && !_commands.TryDequeue(out key))
+            for (int i = 0; i < MAX_ATTEMPTS && !_commands.TryDequeue(out key); i++)
             {
                 await Task.Delay(SLEEP_MILLISECONDS);
-                key = await GetCommandKeyAsync(attempts + 1);
             }
 
             return key;
         }
+
+        public static void Dispose() => _semaphore.Dispose();
     }
 }

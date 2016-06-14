@@ -24,7 +24,7 @@ namespace Web.KeySender.Api
                 Log.Error(ex);
             }
 
-            Log.Trace("The key {0} is being returned", key);
+            Log.Trace("The key {0} is being returned.", key);
             return key;
         }
     }

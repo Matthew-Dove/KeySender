@@ -3,6 +3,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Web.KeySender.Core;
 
 namespace Web.KeySender
 {
@@ -17,5 +18,7 @@ namespace Web.KeySender
         }
 
         protected void Application_Error(object sender, EventArgs e) => Log.Error(Server.GetLastError());
+
+        protected void Application_End() => CommandQueue.Dispose();
     }
 }
