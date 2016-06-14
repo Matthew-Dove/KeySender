@@ -1,4 +1,55 @@
-﻿<script src="~/Scripts/hmac-sha512.js"></script>
+﻿<div id="container">
+    <div id="upper" onclick="javascript: window.sendKey(this.innerHTML);">F10</div>
+    <div id="middle">&nbsp;</div>
+    <div id="lower" onclick="javascript: window.sendKey(this.innerHTML);">F11</div>
+</div>
+<div id="middleCircle"></div>
+
+@section css {
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            height: 100%;
+            background-color: black;
+        }
+        #upper {
+            height: 49%;
+            background-color: #3498db;
+        }
+        #middle {
+            height: 2%;
+            background-color: black;
+        }
+        #lower {
+            height: 49%;
+            background-color: #8e44ad;
+        }
+        #container div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6em;
+        }
+        #middleCircle {
+            top: 50%;
+            left: 50%;
+            width: 10em;
+            height: 10em;
+            margin-top: -5em;
+            margin-left: -5em;
+            background-color: black;
+            position: absolute;
+            border-radius: 50%;
+        }
+    </style>
+}
+
+<script src="~/Scripts/hmac-sha512.js"></script>
 <script src="~/Scripts/jquery-1.6.4.min.js"></script>
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 <script src="/signalr/hubs"></script>
